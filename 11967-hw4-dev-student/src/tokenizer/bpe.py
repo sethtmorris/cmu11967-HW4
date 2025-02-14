@@ -97,9 +97,20 @@ class ASCIIBPETokenizer:
         Returns:
             list[int]: New list of token ids, after one merge step
         """
+        counter = compute_bigram_statistics(token_ids)
 
-        # TODO: Implement this function
-        return ...
+        #most_common_bigrams = max(token_dict.values()); {key for key, value in token_dict.items() if value == max_value}
+        #print(most_common_bigram)
+        #most_common_bigram = min(most_common_bigrams)
+        bigram = max(counter, key=counter.get)
+        left_token, right_token = bigram
+        new_token = self.vocab[left_token] + self.vocab[right_token]
+
+        new_token_id = len(self.vocab)
+        self.vocab.append(new_token)
+        self.merge_rules[bigram] = new_token_id
+
+        return replace_bigram(token_ids, bigram, new_token_id)
 
     def encode(self, text: str) -> list[int]:
         """Convert text to tokens.
@@ -114,8 +125,20 @@ class ASCIIBPETokenizer:
         assert all(ord(c) < 128 for c in text), "input text is not ASCII"
 
         # TODO: Implement this function
-        token_ids = ...
-        return token_ids
+        pattern = re.compile(r"(\s+\S*)")
+        encoded = []
+        for chunk in re.findall(pattern, text):
+            token_ids = string_to_ascii(test)
+            bigram_stats = compute_bigram_statistics(token_ids)
+            while bigram_stats.keys() & self.merge_rules.keys():
+                for bigram, bigram_id in self.merge_rules.items():
+                    if bigram_stats[bigram] > 0:
+                        token_ids = replace_bigram(token_ids, bigram, bigram_id)
+                        break
+                bigram_stats = compute_bigram_statistics(token_ids)
+        encoded.extend(token_ids)
+
+        return encoded
 
     def decode(self, token_ids: list[int]) -> str:
         """Convert tokens back to text.
@@ -128,7 +151,8 @@ class ASCIIBPETokenizer:
         """
 
         # TODO: Implement this function
-        return ...
+        decoded_str = ""
+        return decoded_str + self.vocab[token_id] in token_ids
 
     @classmethod
     def from_config(cls, config_file: str):
