@@ -128,7 +128,7 @@ class ASCIIBPETokenizer:
         pattern = re.compile(r"(\s+\S*)")
         encoded = []
         for chunk in re.findall(pattern, text):
-            token_ids = string_to_ascii(test)
+            token_ids = string_to_ascii(text)
             bigram_stats = compute_bigram_statistics(token_ids)
             while bigram_stats.keys() & self.merge_rules.keys():
                 for bigram, bigram_id in self.merge_rules.items():
@@ -136,7 +136,7 @@ class ASCIIBPETokenizer:
                         token_ids = replace_bigram(token_ids, bigram, bigram_id)
                         break
                 bigram_stats = compute_bigram_statistics(token_ids)
-        encoded.extend(token_ids)
+            encoded.extend(token_ids)
 
         return encoded
 
@@ -152,7 +152,7 @@ class ASCIIBPETokenizer:
 
         # TODO: Implement this function
         decoded_str = ""
-        return decoded_str + self.vocab[token_id] in token_ids
+        return decoded_str.join([self.vocab[token_id] for token_id in token_ids])
 
     @classmethod
     def from_config(cls, config_file: str):
