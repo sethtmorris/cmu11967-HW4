@@ -102,7 +102,8 @@ class ASCIIBPETokenizer:
         #most_common_bigrams = max(token_dict.values()); {key for key, value in token_dict.items() if value == max_value}
         #print(most_common_bigram)
         #most_common_bigram = min(most_common_bigrams)
-        bigram = max(counter, key=counter.get)
+        #bigram = max(counter, key=counter.get)
+        bigram = min(counter, key=lambda tupl: (-counter[tupl], tupl))
         left_token, right_token = bigram
         new_token = self.vocab[left_token] + self.vocab[right_token]
 
